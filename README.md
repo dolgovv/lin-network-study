@@ -1,362 +1,254 @@
-## Part 1. **ipcalc** tool
+<h2> Part 1: Инструмент ipcalc </h2>
 
-##### Start a virtual machine (hereafter -- ws1)
+<h3> 1.1: Сети и маски </h3>
 
-#### 1.1. Networks and Masks
+- **Адрес сети 192.167.38.54/13:** 192.160.0.0
 
-##### Define and write in the report:
+- | Обычная запись  | Префиксная запись |                     Двоичная запись |
+  | --------------- | :---------------: | ----------------------------------: |
+  | 255.255.255.0   |        /24        | 11111111.11111111.11111111.00000000 |
+  | 255.254.0.0     |        /15        | 11111111.11111110.00000000.00000000 |
+  | 255.255.255.240 |        /28        | 11111111.11111111.11111111.11110000 |
 
-##### 1) network address of _192.167.38.54/13_
+- | Маска 12.167.38.4                   | Минимальный хост | Максимальный хост |
+  | ----------------------------------- | :--------------: | ----------------: |
+  | /8                                  |     12.0.0.1     |    12.255.255.254 |
+  | 11111111.11111111.00000000.00000000 |    12.167.0.1    |    12.167.255.254 |
+  | 255.255.254.0                       |   12.167.38.1    |     12.167.39.254 |
+  | /4                                  |     0.0.0.1      |    15.255.255.254 |
 
-##### 2) conversion of the mask _255.255.255.0_ to prefix and binary, _/15_ to normal and binary, _11111111.11111111.11111111.11110000_ to normal and prefix
+<h3> 1.2. localhost </h3>
 
-##### 3) minimum and maximum host in _12.167.38.4_ network with masks: _/8_, _11111111.11111111.00000000.00000000_, _255.255.254.0_ and _/4_
+- | IP            | Можно ли обратиться с локалхост/8 |
+  | ------------- | :-------------------------------: |
+  | 194.34.23.100 |                Нет                |
+  | 127.0.0.2     |                Да                 |
+  | 127.1.0.1     |                Да                 |
+  | 128.0.0.1     |                Нет                |
 
-#### 1.2. localhost
+  > Маска локалхост = 8
 
-##### Define and write in the report whether an application running on localhost can be accessed with the following IPs: _194.34.23.100_, _127.0.0.2_, _127.1.0.1_, _128.0.0.1_
+<h3> 1.3. Диапазоны и сегменты сетей </h3>
 
-#### 1.3. Network ranges and segments
+- | IP             | Можно использовать в качестве публичного |
+  | -------------- | :--------------------------------------: |
+  | 10.0.0.45      |                   Нет                    |
+  | 134.43.0.2     |                    Да                    |
+  | 192.168.4.2    |                   Нет                    |
+  | 172.20.250.4   |                   Нет                    |
+  | 172.0.2.1      |                    Да                    |
+  | 192.172.0.1    |                    Да                    |
+  | 172.68.0.2     |                    Да                    |
+  | 172.16.255.255 |                   Нет                    |
+  | 10.10.10.10    |                   Нет                    |
+  | 192.169.168.1  |                    Да                    |
 
-##### Define and write in a report:
+- | IP          | Может быть шлюзом 10.10.0.0/18 |
+  | ----------- | :----------------------------: |
+  | 10.0.0.1    |              Нет               |
+  | 10.10.0.2   |               Да               |
+  | 10.10.10.10 |               Да               |
+  | 10.10.100.1 |              Нет               |
+  | 10.10.1.255 |               Да               |
 
-##### 1) which of the listed IPs can be used as public and which only as private: _10.0.0.45_, _134.43.0.2_, _192.168.4.2_, _172.20.250.4_, _172.0.2.1_, _192.172.0.1_, _172.68.0.2_, _172.16.255.255_, _10.10.10.10_, _192.169.168.1_
+<!-- > **Статус:** 2 из 6 подподзадач выполнены.
+> **Примечание:** Все изображения хранятся в папке `/images` проекта. -->
 
-##### 2) which of the listed gateway IP addresses are possible for _10.10.0.0/18_ network: _10.0.0.1_, _10.10.0.2_, _10.10.10.10_, _10.10.100.1_, _10.10.1.255_
+<h2> Part 2: Статическая маршрутизация между двумя машинами </h2>
 
-## Part 2. Static routing between two machines
+- **Подними две виртуальные машины (далее -- ws1 и ws2)**
+  ![Поднял](1.1.png)
 
-##### Start two virtual machines (hereafter -- ws1 and ws2)
+- **С помощью команды ip a посмотри существующие сетевые интерфейсы**
+  ![ip a](1.2.png)
 
-##### View existing network interfaces with the `ip a` command
+- **Опиши сетевой интерфейс, соответствующий внутренней сети, на обеих машинах и задай следующие адреса и маски: ws1 — 192.168.100.10, маска /16, ws2 — 172.24.116.8, маска /12.**
+  ![](1.3.png)
 
-- Add a screenshot with the call and output of the used command to the report.
+- **Выполни команду netplan apply для перезапуска сервиса сети.**
+  ![](1.4.png)
 
-##### Describe the network interface corresponding to the internal network on both machines and set the following addresses and masks: ws1 — _192.168.100.10_, mask _/16 _, ws2 — _172.24.116.8_, mask _/12_
+<h3> 2.1: Добавление статического маршрута вручную </h3>
 
-- Add screenshots of the changed _etc/netplan/00-installer-config.yaml_ file for each machine to the report.
+- Добавь статический маршрут от одной машины до другой и обратно при помощи команды вида ip r add. Пропингуй соединение между машинами.
+  ![](1.5.png)
 
-##### Run the `netplan apply` command to restart the network service
+- Добавь статический маршрут от одной машины до другой с помощью файла /etc/netplan/00-installer-config.yaml. Пропингуй соединение между машинами.
+  ![](1.6.png)
 
-- Add a screenshot with the call and output of the used command to the report.
+<h2> Part 3. Утилита iperf3 </h2>
 
-#### 2.1. Adding a static route manually
+- |                         |                           |
+  | ----------------------- | ------------------------- |
+  | 8 Mbps (мегабит/сек)    | 1 MB/s (мегабайт/сек)     |
+  | 100 MB/s (мегабайт/сек) | 100000 Kbps (килобит/сек) |
+  | 1 Gbps (гигабит/сек)    | 1000 Mbps (мегабит/сек)   |
 
-##### Add a static route from one machine to another and back using a
+- Измерь скорость соединения между ws1 и ws2.
+  ![](1.7.png)
 
-`ip r add` command.
+<h2> Part 4. Сетевой экран </h2>
 
-##### Ping the connection between the machines
+<h3> 4.1. Утилита iptables </h3>
 
-- Add a screenshot with the call and output of the used commands to the report.
+- На ws1 примени стратегию, когда в начале пишется запрещающее правило, а в конце пишется разрешающее правило (это касается пунктов 4 и 5). На ws2 примени стратегию, когда в начале пишется разрешающее правило, а в конце пишется запрещающее правило (это касается пунктов 4 и 5). Открой на машинах доступ для порта 22 (ssh) и порта 80 (http).
+  ![](1.8.png)
 
-#### 2.2. Adding a static route with saving
+- Помести скрины с запуском обоих файлов.
+  ![](1.9.png)
 
-##### Restart the machines
+- Опиши разницу между стратегиями, применёнными в первом и втором файлах.
+  Судьба пакетов определяется исходя из последовательности правил в iptables сверху вниз. Из этого следует, что в случае со стратегией "сначала дропать", пакет будет дропаться вне зависимости от доп условий разрешающего правила, а в случае с противоположной стратегией можно будет пропускать некоторые пакеты и отсеивать другие. Короче говоря, последовательность правил решает какое правило правило исполнится первым и, возможно, обесценит остальные правила. Из-за этого на данном этапе проекта вторая машина не сможет пинговать первую, у которой первое правило DROP, а не ACCEPT
 
-##### Add static route from one machine to another using _/etc/netplan/00-installer-config.yaml_ file
+<h3> 4.2. Утилита nmap </h3>
 
-- Add screenshots of the changed _/etc/netplan/00-installer-config.yaml_
-  file to the report.
+- Командой ping найди машину, которая не «пингуется», после чего утилитой nmap покажи, что хост машины запущен
+  ![](1.10.png)
 
-##### Ping the connection between the machines
+<h2> Part 5. Статическая маршрутизация сети </h2>
 
-- Add a screenshot with the call and output of the used command to the report.
+<h3> 5.1. Настройка адресов машин </h3>
 
-## Part 3. **iperf3** utility
+![](network_example.png)
 
-- In this task you need to use ws1 and ws2 from _Part 2_.
+- Настрой конфигурации машин в etc/netplan/00-installer-config.yaml согласно сети на рисунке выше
+  ![](2.1.png)
 
-#### 3.1. Connection speed
+- Командой ip -4 a проверь, что адрес машины задан верно. Также пропингуй ws22 с ws21. Аналогично пропингуй r1 с ws11
+  ![](2.2.png)
 
-##### Convert and write results in the report: 8 Mbps to MB/s, 100 MB/s to Kbps, 1 Gbps to Mbps
+<h3> 5.2. Включение переадресации IP-адресов </h3>
 
-#### 3.2. **iperf3** utility
+- Для включения переадресации IP выполни команду на роутерах: **sysctl -w net.ipv4.ip_forward=1**
+  ![](2.3.png)
 
-##### Measure connection speed between ws1 and ws2
+- Открой файл /etc/sysctl.conf и добавь в него следующую строку: **net.ipv4.ip_forward = 1**
+  ![](2.4.png)
 
-- Add a screenshots with the call and output of the used commands to the report.
+<!-- eth0 (i++) = enp0s8 (i++) -->
 
-## Part 4. Network firewall
+<h3> 5.3. Установка маршрута по умолчанию </h3>
 
-- In this task you need to use ws1 and ws2 from _Part 2_.
+- Настрой маршрут по умолчанию (шлюз) для рабочих станций. Для этого добавь default перед IP-роутера в файле конфигураций. Вызови ip r и покажи, что добавился маршрут в таблицу маршрутизации
+  ![](2.5.png)
 
-#### 4.1. **iptables** utility
+- Пропингуй с ws11 роутер r2 и покажи на r2, что пинг доходит. Для этого используй команду:
+  ![](2.6.png)
 
-##### Create a _/etc/firewall.sh_ file simulating the firewall on ws1 and ws2:
+<h3> 5.4. Добавление статических маршрутов </h3>
 
-```shell
-#!/bin/sh
+- Добавь в роутеры r1 и r2 статические маршруты в файле конфигураций
+  ![](2.7.png)
 
-# Deleting all the rules in the "filter" table (default).
-iptables -F
-iptables -X
-```
+- Вызови ip r и покажи таблицы с маршрутами на обоих роутерах
+  ![](2.8.png)
 
-##### The following rules should be added to the file in a row:
+- Запусти команды на ws11: **ip r list 10.10.0.0/[маска сети**] и **ip r list 0.0.0.0/0**:
+  ![](2.9.png)
 
-##### 1) on ws1 apply a strategy where a deny rule is written at the beginning and an allow rule is written at the end (this applies to points 4 and 5);
+- **Объясни, почему для адреса 10.10.0.0/[маска сети] был выбран маршрут, отличный от 0.0.0.0/0, хотя он попадает под маршрут по умолчанию:** потому что ядро предпочитает более точный маршрут (то есть с наибольшей маской)
 
-##### 2) on ws2 apply a strategy where an allow rule is written at the beginning and a deny rule is written at the end (this applies to points 4 and 5);
+<h3> 5.5. Построение списка маршрутизаторов </h3>
 
-##### 3) open access on machines for port 22 (ssh) and port 80 (http);
+- Запусти на r1 команду дампа: **tcpdump -tnv -i eth0**. При помощи утилиты traceroute построй список маршрутизаторов на пути от ws11 до ws21.
+  ![](2.10.png)
 
-##### 4) reject _echo reply_ (machine must not ping, i.e. there must be a lock on OUTPUT);
+- В отчёте, опираясь на вывод, полученный из дампа на r1, объясни принцип работы построения пути при помощи traceroute: traceroute отправляет несколько сетевых пакетов к указанному удаленному узлу, в каждом из которых значение TTL (Time-To-Live) увеличивается на 1. Каждый узел, принимая пакет, уменьшает это значение на 1 и когда TTL равняется 0 - возвращает его, после чего traceroute записывает какой айпи его вернул. После этого отправляется следующий пакет с увеличенным на 1 значением TTL (ну чтоб подальше улетело), схема повторяется до тех пор, пока не получен ответ от указанного при вызове утилиты адреса. На основе этих данных traceroute строит отчет о маршруте
 
-##### 5) allow _echo reply_ (machine must be pinged);
+<h3> 5.6. Использование протокола ICMP при маршрутизации </h3>
 
-- Add screenshots of the _/etc/firewall_ file for each machine to the report.
+- Запусти на r1 перехват сетевого трафика, проходящего через eth0 с помощью команды:
+  **tcpdump -n -i eth0 icmp**. Пропингуй с ws11 несуществующий IP (например, 10.30.0.111) с помощью команды: **ping -c 1 10.30.0.111**:
+  ![](2.11.png)
 
-##### Run the files on both machines with `chmod +x /etc/firewall.sh` and `/etc/firewall.sh` commands.
+<h2> Part 6. Динамическая настройка IP с помощью DHCP </h2>
 
-- Add screenshots of both files running to the report;
-- Describe in the report the difference between the strategies used in the first and second files.
+- Укажи адрес маршрутизатора по умолчанию, DNS-сервер и адрес внутренней сети
+  ![](3.1.png)
 
-#### 4.2. **nmap** utility
+- В файле resolv.conf пропиши nameserver 8.8.8.8
+  ![](3.2.png)
 
-##### Use **ping** command to find a machine which is not pinged, then use **nmap** utility to show that the machine host is up
+- Перезагрузи службу DHCP командой systemctl restart isc-dhcp-server. Машину ws21 перезагрузи при помощи reboot и через ip a покажи, что она получила адрес. Также пропингуй ws22 с ws21.
+  ![](3.3.png)
 
-_Check: nmap output should say: `Host is up`_.
+- Укажи MAC-адрес у ws11, для этого в etc/netplan/00-installer-config.yaml надо добавить строки: macaddress: 10:10:10:10:10:BA, dhcp4: true.
+  ![](3.4.png)
 
-- Add screenshots with the call and output of the **ping** and **nmap** commands to the report.
+- **Для r1 настрой аналогично r2, но сделай выдачу адресов с жесткой привязкой к MAC-адресу (ws11). Проведи аналогичные тесты**
+  - Укажи адрес маршрутизатора по умолчанию, DNS-сервер и адрес внутренней сети
+    ![](3.5.png)
 
-## Part 5. Static network routing
+  - В файле resolv.conf пропиши nameserver 8.8.8.8
+    ![](3.6.png)
+  - Перезагрузи службу DHCP командой systemctl restart isc-dhcp-server. Машину ws11 перезагрузи при помощи reboot и через ip a покажи, что она получила адрес
+    ![](3.7.png)
+  - Также пропингуй ws22 с ws11.
+    ![](3.8.png)
 
-Network: \
-![part5_network](misc/images/part5_network.png)
+- Запроси с ws21 обновление IP-адреса
+  ![](3.9.png)
+  - Опиши, какими опциями DHCP сервера пользовался в данном пункте:
+  1. **sudo dhclient -r** - освбодить текущий айпи
+  2. **sudo dhclient** - попросить новый айпи
 
-##### Start five virtual machines (3 workstations (ws11, ws21, ws22) and 2 routers (r1, r2))
+<h2> Part 7. NAT </h2>
 
-#### 5.1. Configuration of machine addresses
+- В файле /etc/apache2/ports.conf на ws22 и r1 измени строку Listen 80 на Listen 0.0.0.0:80, то есть сделай сервер Apache2 общедоступным.
+  ![](4.1.png)
 
-##### Set up the machine configurations in _etc/netplan/00-installer-config.yaml_ according to the network in the picture.
+- Запусти веб-сервер Apache командой service apache2 start на ws22 и r1.
+  ![](4.2.png)
 
-- Add screenshots of the _etc/netplan/00-installer-config.yaml_ file for each machine to the report.
+- Добавь в фаервол, созданный по аналогии с фаерволом из Части 4, на r2 следующие правила:
+  1. Удаление правил в таблице filter — iptables -F;
+  2. Удаление правил в таблице «NAT» — iptables -F -t nat;
+  3. Отбрасывать все маршрутизируемые пакеты — iptables --policy FORWARD DROP.
+     Запусти файл также, как в Части 4.
+     Проверь соединение между ws22 и r1 командой ping (При запуске файла с этими правилами, ws22 не должна «пинговаться» с r1)
+     ![](4.3.png)
 
-##### Restart the network service. If there are no errors, check that the machine address is correct with the `ip -4 a`command. Also ping ws22 from ws21. Similarly ping r1 from ws11.
+- Разреши маршрутизацию всех пакетов протокола ICMP. Запусти файл также, как в Части 4. Проверь соединение между ws22 и r1 командой ping (При запуске файла с этими правилами, ws22 должна «пинговаться» с r1)
+  ![](4.4.png)
 
-- Add screenshots with the call and output of the used commands to the report.
+<h3> SNAT </h3>
 
-#### 5.2. Enabling IP forwarding.
+- Включи SNAT, а именно маскирование всех локальных IP из локальной сети, находящейся за r2 (по обозначениям из Части 5 — сеть 10.20.0.0)
+  ![](4.5.png)
 
-##### To enable IP forwarding, run the following command on the routers:
+- Проверь соединение по TCP для SNAT: для этого с ws22 подключиться к серверу Apache на r1:
+  ![](4.6.png)
 
-`sysctl -w net.ipv4.ip_forward=1`.
+- Тут видно, что r1 принимает пакеты с 10.20.0.1 (r2), а не с 10.20.0.20 (ws22)
+  ![](4.7.png)
 
-_With this approach, the forwarding will not work after the system is rebooted._
+<h3> DNAT </h3>
 
-- Add a screenshot with the call and output of the used command to the report.
+- Включи DNAT на 8080 порт машины r2 и добавить к веб-серверу Apache, запущенному на ws22, доступ извне сети
+  ![](4.8.png)
 
-##### Open _/etc/sysctl.conf_ file and add the following line:
+- Проверь соединение по TCP для DNAT: для этого с r1 подключиться к серверу Apache на ws22 через r2 командой
+  ![](4.9.png)
+  _Тут видно, что при подключении к адресу 10.100.0.12 (r2) с r1 пакеты перенаправляются на (доходят до) ws22_
 
-`net.ipv4.ip_forward = 1`
-_With this approach, IP forwarding is enabled permanently._
+<h2> Part 8. Дополнительно. Знакомство с SSH Tunnels </h2>
 
-- Add a screenshot of the changed _/etc/sysctl.conf_ file to the report.
+- Запусти веб-сервер Apache на ws22 только на localhost (то есть в файле /etc/apache2/ports.conf измени строку Listen 80 на Listen localhost:80)
+  ![](5.1.png)
 
-#### 5.3. Default route configuration
+- Воспользуйся Local TCP forwarding с ws21 до ws22, чтобы получить доступ к веб-серверу на ws22 с ws21
+  ![](5.2.png)
+  _Команда: sudo ssh -v -L 1234:localhost:80 watchsan@10.20.0.10_
 
-Here is an example of the `ip r' command output after adding a gateway:
+- Воспользуйся Remote TCP forwarding c ws11 до ws22, чтобы получить доступ к веб-серверу на ws22 с ws11
+  ![](5.3.png)
+  _Команда: sudo ssh -v -R 1234:localhost:80 watchsan@10.20.0.10_
 
-```
-default via 10.10.0.1 dev eth0
-10.10.0.0/18 dev eth0 proto kernel scope link src 10.10.0.2
-```
+<h3>Пояснение: Структура команды подключения sudo ssh -v -L 1234:localhost:80 user@10.20.0.10:</h3>
 
-##### Configure the default route (gateway) for the workstations. To do this, add `default` before the router's IP in the configuration file
-
-- Add a screenshot of the _etc/netplan/00-installer-config.yaml_ file to the report.
-
-##### Call `ip r` and show that a route is added to the routing table
-
-- Add a screenshot with the call and output of the used command to the report.
-
-##### Ping r2 router from ws11 and show on r2 that the ping is reaching. To do this, use the `tcpdump -tn -i eth0`
-
-command.
-
-- Add screenshots with the call and output of the used commands to the report.
-
-#### 5.4. Adding static routes
-
-##### Add static routes to r1 and r2 in configuration file. Here is an example for r1 route to 10.20.0.0/26:
-
-```shell
-# Add description to the end of the eth1 network interface:
-- to: 10.20.0.0/26
-  via: 10.100.0.12
-```
-
-- Add screenshots of the changed _etc/netplan/00-installer-config.yaml_ file for each router to the report.
-
-##### Call `ip r` and show route tables on both routers. Here is an example of the r1 table:
-
-```
-10.100.0.0/16 dev eth1 proto kernel scope link src 10.100.0.11
-10.20.0.0/26 via 10.100.0.12 dev eth1
-10.10.0.0/18 dev eth0 proto kernel scope link src 10.10.0.1
-```
-
-- Add a screenshot with the call and output of the used command to the report.
-
-##### Run `ip r list 10.10.0.0/[netmask]` and `ip r list 0.0.0.0/0` commands on ws11.
-
-- Add a screenshot with the call and the output of the used commands to the report.
-- Explain in the report why a different route other than 0.0.0.0/0 had been selected for 10.10.0.0/\[netmask\] although it could be the default route.
-
-#### 5.5. Making a router list
-
-Here is an example of the **traceroute** utility output after adding a gateway:
-
-```
-1 10.10.0.1 0 ms 1 ms 0 ms
-2 10.100.0.12 1 ms 0 ms 1 ms
-3 10.20.0.10 12 ms 1 ms 3 ms
-```
-
-##### Run the `tcpdump -tnv -i eth0` dump command on r1
-
-##### Use **traceroute** utility to list routers in the path from ws11 to ws21
-
-- Add a screenshots with the call and the output of the used commands (tcpdump and traceroute) to the report;
-- Based on the output of the dump on r1, explain in the report how path construction works using **traceroute**.
-
-#### 5.6. Using **ICMP** protocol in routing
-
-##### Run on r1 network traffic capture going through eth0 with the
-
-`tcpdump -n -i eth0 icmp` command.
-
-##### Ping a non-existent IP (e.g. _10.30.0.111_) from ws11 with the
-
-`ping -c 1 10.30.0.111` command.
-
-- Add a screenshot with the call and the output of the used commands to the report.
-
-## Part 6. Dynamic IP configuration using **DHCP**
-
-"Our next step is to learn more about **DHCP** service, which you already know."
-
-**== Task ==**
-
-_In this task you need to use virtual machines from Part 5._
-
-##### For r2, configure the **DHCP** service in the _/etc/dhcp/dhcpd.conf_ file:
-
-##### 1) Specify the default router address, DNS-server and internal network address. Here is an example of a file for r2:
-
-```shell
-subnet 10.100.0.0 netmask 255.255.0.0 {}
-
-subnet 10.20.0.0 netmask 255.255.255.192
-{
-    range 10.20.0.2 10.20.0.50;
-    option routers 10.20.0.1;
-    option domain-name-servers 10.20.0.1;
-}
-```
-
-##### 2) Write `nameserver 8.8.8.8` in a _resolv.conf_ file
-
-- Add screenshots of the changed files to the report.
-
-##### Restart the **DHCP** service with `systemctl restart isc-dhcp-server`. Reboot the ws21 machine with `reboot` and show with `ip a` that it has got an address. Also ping ws22 from ws21.
-
-- Add a screenshot with the call and the output of the used commands to the report.
-
-##### Specify MAC address at ws11 by adding to _etc/netplan/00-installer-config.yaml_:
-
-`macaddress: 10:10:10:10:10:BA`, `dhcp4: true`
-
-- Add a screenshot of the changed _etc/netplan/00-installer-config.yaml_ file to the report.
-
-##### Сonfigure r1 the same way as r2, but make the assignment of addresses strictly linked to the MAC-address (ws11). Run the same tests
-
-- Describe this part in the report the same way as for r2.
-
-##### Request IP address update from ws21
-
-- Add screenshots of IP before and after update to the report;
-- Describe in the report what **DHCP** server options were used in this point.
-
-## Part 7. **NAT**
-
-"And finally, the cherry on the cake, let me tell you about network address translation mechanism."
-
-**== Task ==**
-
-_In this task you need to use virtual machines from Part 5_
-
-##### In _/etc/apache2/ports.conf_ file change the line `Listen 80` to `Listen 0.0.0.0:80`on ws22 and r1, i.e. make the Apache2 server public
-
-- Add a screenshot of the changed file to the report
-
-##### Start the Apache web server with `service apache2 start` command on ws22 and r1
-
-- Add screenshots with the call and the output of the used command to the report.
-
-##### Add the following rules to the firewall, created similarly to the firewall from Part 4, on r2:
-
-##### 1) delete rules in the filter table — `iptables -F`
-
-##### 2) delete rules in the "NAT" table — `iptables -F -t nat`
-
-##### 3) drop all routed packets — `iptables --policy FORWARD DROP`
-
-##### Run the file as in Part 4
-
-##### Check the connection between ws22 and r1 with the `ping` command
-
-_When running the file with these rules, ws22 should not ping from r1_
-
-- Add screenshots with the call and the output of the used command to the report.
-
-##### Add another rule to the file:
-
-##### 4) allow routing of all **ICMP** protocol packets
-
-##### Run the file as in Part 4
-
-##### Check connection between ws22 and r1 with the `ping` command
-
-_When running the file with these rules, ws22 should ping from r1_
-
-- Add screenshots with the call and the output of the used command to the report.
-
-##### Add two more rules to the file:
-
-##### 5) enable **SNAT**, which is masquerade all local IP from the local network behind r2 (as defined in Part 5 — network 10.20.0.0)
-
-_Tip: it is worth thinking about routing internal packets as well as external packets with an established connection_
-
-##### 6) enable **DNAT** on port 8080 of r2 machine and add external network access to the Apache web server running on ws22
-
-\*Tip: be aware that when you will try to connect, there will be a new tcp connection for ws22 and port 80
-
-- Add a screenshot of the changed file to the report
-
-##### Run the file as in Part 4
-
-_Before testing it is recommended to disable the **NAT** network interface in VirtualBox (its presence can be checked with `ip a` command), if it is enabled_
-
-##### Check the TCP connection for **SNAT** by connecting from ws22 to the Apache server on r1 with the `telnet [address] [port]` command
-
-##### Check the TCP connection for **DNAT** by connecting from r1 to the Apache server on ws22 with the `telnet` command (address r2 and port 8080)
-
-- Add screenshots with the call and the output of the used commands to the report.
-
-## Part 8. Bonus. Introduction to **SSH Tunnels**
-
-_In this task you need to use virtual machines from Part 5._
-
-##### Run a firewall on r2 with the rules from Part 7
-
-##### Start the **Apapche** web server on ws22 on localhost only (i.e. in _/etc/apache2/ports.conf_ file change the line `Listen 80` to `Listen localhost:80`)
-
-##### Use _Local TCP forwarding_ from ws21 to ws22 to access the web server on ws22 from ws21
-
-##### Use _Remote TCP forwarding_ from ws11 to ws22 to access the web server on ws22 from ws11
-
-##### To check if the connection worked in both of the previous steps, go to a second terminal (e.g. with the Alt + F2) and run the `telnet 127.0.0.1 [local port]` command.
-
-- In the report, describe the commands that you need for doing these 4 steps and add screenshots of their call and output.
+1. -L - локальное подключение (local). -R - удаленное (remote)
+2. 1234: - локальный порт, поступающие данные на который перенаправляются в ssh-туннель
+3. localhost - адрес ресурса, к которому мы хотим получить доступ относительно той машины, к которой подключается. _Подключившись к машине Х мы можем подключиться к другой машине, к которой машина Х имеет доступ - для этого надо указать айпи. Если нужна именно та машина, к которой подключаемся - указываем локалхост_
+4. :80 - порт на машине назначения, к которой имеет доступ требующаяся нам служба
+5. user - имя пользователя, под которым мы входим в систему
+6. 10.20.0.10 - собственно айпи машины назначения
